@@ -103,10 +103,6 @@ ipcMain.on('getFiles', async (event, args) => {
     if (err) console.log(err)
     const newFiles = files.filter(file => !blacklist.includes(file))
     await getImageSize(newFiles, 0)
-
     event.returnValue = processFiles(temp)
-    setTimeout(() => {
-      console.log(temp)
-    }, 5000)
   })
 })

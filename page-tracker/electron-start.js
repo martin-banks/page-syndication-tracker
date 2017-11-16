@@ -70,26 +70,48 @@ const blacklist = [
 ]
 /* eslint-disable */
 function processFiles(files) {
+  console.log({ files })
   const makeImages = files
     .filter(f => !blacklist.includes(f.file))
-    .map((f, i) => {
+    .reduce((output, f, i) => {
+      let update = output
+      update.push(f)
+      update[i].ratio = f.width / f.height
+      console.log({update, f})
+      return update
+    }, [])
+  const totalWidths = makeImages.reduce((output, f, i) => {
+    let update = output
+    update.push(update[i] + (500 * f.ratio))
+    return update
+  }, [0])
+  console.log({totalWidths})
+
+  console.log(makeImages)
+  const template = makeImages.map((f, i) => {
       const { width, height } = f
       const ratio = width / height
+      const imgWidth = 500 * ratio
+      const left = (totalWidths[i])
+      console.log(imgWidth, imgWidth * i)
       return  `<img 
-          style="
-            position: absolute; 
-            top: 0; 
-            left: 0;
-            width: ${width}px;
-            height: ${height * ratio}px
-          " 
-          src="${filePath}/${f.file}" 
-          data-width="${f.width}"
-          data-index="${i}"
-          data-height="${f.height}"
-        />`
-      }).join('')
-  return `<div style="position: relative">${makeImages}</div>`
+        class="image"
+        style="
+          position: absolute; 
+          top: 0; 
+          left: 0;
+          width: ${imgWidth}px;
+          height: ${500}px;
+          left: ${left}px;
+          opacity: 0.5;
+        " 
+        src="${filePath}/${f.file}" 
+        data-width="${f.width}"
+        data-index="${i}"
+        data-height="${f.height}"
+      />`
+    }).join('')
+  return `<div style="position: relative">${template}</div>`
 }
 
 let temp = []

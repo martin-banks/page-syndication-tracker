@@ -68,17 +68,27 @@ const filePath = path.join(__dirname, '__data-store/test_session')
 const blacklist = [
   '.DS_Store',
 ]
-
+/* eslint-disable */
 function processFiles(files) {
   const makeImages = files
     .filter(f => !blacklist.includes(f.file))
-    .map(f => `<img 
-      style="position: absolute; top: 0; left: 0" 
-      src="${filePath}/${f.file}" 
-      data-width="${f.width}"
-      data-height="${f.height}"
-    />`).join('')
-
+    .map((f, i) => {
+      const { width, height } = f
+      const ratio = width / height
+      return  `<img 
+          style="
+            position: absolute; 
+            top: 0; 
+            left: 0;
+            width: ${width}px;
+            height: ${height * ratio}px
+          " 
+          src="${filePath}/${f.file}" 
+          data-width="${f.width}"
+          data-index="${i}"
+          data-height="${f.height}"
+        />`
+      }).join('')
   return `<div style="position: relative">${makeImages}</div>`
 }
 
